@@ -2,6 +2,7 @@
 
 mod commands;
 mod security;
+mod vault;
 
 use log::info;
 use tauri::Manager;

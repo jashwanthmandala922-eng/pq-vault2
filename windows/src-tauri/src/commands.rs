@@ -1,15 +1,6 @@
 use serde::{Deserialize, Serialize};
+use crate::vault::{self, VaultEntry};
 use crate::security::{validate_command_input, validate_password_strength, validate_url, sanitize_string, ValidationError};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct VaultEntry {
-    pub id: String,
-    pub title: String,
-    pub url: Option<String>,
-    pub username: Option<String>,
-    pub created_at: String,
-    pub favorite: bool,
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SyncPeer {
@@ -59,53 +50,55 @@ impl From<ValidationError> for CommandError {
     }
 }
 
+impl From<vault::VaultError> for CommandError {
+    fn from(err: vault::VaultError) -> Self {
+        match err {
+            vault::VaultError::Locked => CommandError {
+                code: "VAULT_LOCKED".to_string(),
+                message: "Vault is locked".to_string(),
+            },
+            vault::VaultError::InvalidPassword => CommandError {
+                code: "INVALID_PASSWORD".to_string(),
+                message: "Invalid master password".to_string(),
+            },
+            vault::VaultError::NotFound(msg) => CommandError {
+                code: "NOT_FOUND".to_string(),
+                message: msg,
+            },
+            _ => CommandError {
+                code: "VAULT_ERROR".to_string(),
+                message: err.to_string(),
+            },
+        }
+    }
+}
+
 /// Unlock the vault with master password
 #[tauri::command]
 pub fn unlock_vault(password: String) -> Result<String, CommandError> {
-    // Validate input against schema
     let payload = serde_json::json!({ "password": &password });
     validate_command_input("unlock_vault", &payload)
         .map_err(|e| CommandError::from(e))?;
 
-    // Additional password strength check
-    validate_password_strength(&password)
-        .map_err(|e| CommandError::from(e))?;
-
-    // Simulate authentication - in production, verify against stored vault
-    // For demo, require password to be at least 12 chars for "correct" password
-    if password.len() < 12 {
-        log::warn!("Failed unlock attempt with short password");
-        return Err(CommandError {
-            code: "INVALID_CREDENTIALS".to_string(),
-            message: "Invalid master password".to_string(),
-        });
-    }
-
-    log::info!("Vault unlocked successfully");
-    Ok("vault_unlocked".to_string())
+    vault::vault_unlock(password)
+        .map_err(|e| CommandError::from(e))
 }
 
 /// Lock the vault
 #[tauri::command]
 pub fn lock_vault() -> Result<(), CommandError> {
-    log::info!("Locking vault");
-    Ok(())
+    vault::vault_lock()
+        .map_err(|e| CommandError::from(e))
 }
 
 /// Create a new vault
 #[tauri::command]
 pub fn create_vault(password: String) -> Result<String, CommandError> {
-    // Validate input
-    let payload = serde_json::json!({ "password": &password });
-    validate_command_input("create_vault", &payload)
+    validate_command_input("create_vault", &serde_json::json!({ "password": &password }))
         .map_err(|e| CommandError::from(e))?;
 
-    // Strong password validation for new vault
-    validate_password_strength(&password)
-        .map_err(|e| CommandError::from(e))?;
-
-    log::info!("Creating new vault");
-    Ok("vault_created".to_string())
+    vault::vault_create(password)
+        .map_err(|e| CommandError::from(e))
 }
 
 /// Add a password entry
@@ -115,23 +108,18 @@ pub fn add_entry(
     url: Option<String>,
     username: Option<String>,
     password: String,
+    notes: Option<String>,
 ) -> Result<VaultEntry, CommandError> {
-    // Validate all inputs against schema
     let mut payload = serde_json::json!({
         "title": &title,
         "password": &password
     });
-    if let Some(u) = &url {
-        payload["url"] = serde_json::json!(u);
-    }
-    if let Some(u) = &username {
-        payload["username"] = serde_json::json!(u);
-    }
+    if let Some(ref u) = url { payload["url"] = serde_json::json!(u); }
+    if let Some(ref u) = username { payload["username"] = serde_json::json!(u); }
 
     validate_command_input("add_entry", &payload)
         .map_err(|e| CommandError::from(e))?;
 
-    // Additional validation
     if let Some(ref u) = url {
         if !validate_url(u) {
             return Err(CommandError {
@@ -141,47 +129,22 @@ pub fn add_entry(
         }
     }
 
-    // Sanitize inputs to prevent XSS/injection
     let safe_title = sanitize_string(&title);
     let safe_username = username.map(|u| sanitize_string(&u));
     let safe_url = url.map(|u| sanitize_string(&u));
+    let safe_notes = notes.map(|n| sanitize_string(&n));
 
-    log::info!("Adding entry: {}", safe_title);
-    Ok(VaultEntry {
-        id: "new_id".to_string(),
-        title: safe_title,
-        url: safe_url,
-        username: safe_username,
-        created_at: "2024-01-01".to_string(),
-        favorite: false,
-    })
+    vault::vault_add_entry(safe_title, safe_url, safe_username, password, safe_notes)
+        .map_err(|e| CommandError::from(e))
 }
 
 /// Get all vault entries
 #[tauri::command]
 pub fn get_entries() -> Result<Vec<VaultEntry>, CommandError> {
-    log::info!("Getting all entries");
-    Ok(vec![
-        VaultEntry {
-            id: "1".to_string(),
-            title: "GitHub".to_string(),
-            url: Some("https://github.com".to_string()),
-            username: Some("user@email.com".to_string()),
-            created_at: "2024-01-01".to_string(),
-            favorite: true,
-        },
-        VaultEntry {
-            id: "2".to_string(),
-            title: "Google".to_string(),
-            url: Some("https://google.com".to_string()),
-            username: Some("user@gmail.com".to_string()),
-            created_at: "2024-01-02".to_string(),
-            favorite: false,
-        },
-    ])
+    Ok(vault::vault_get_entries())
 }
 
-/// Generate a password
+/// Generate a secure password
 #[tauri::command]
 pub fn generate_password(
     length: usize,
@@ -190,12 +153,9 @@ pub fn generate_password(
     numbers: bool,
     symbols: bool,
 ) -> Result<String, CommandError> {
-    // Validate numeric input
     let payload = serde_json::json!({ "length": length });
     validate_command_input("generate_password", &payload)
         .map_err(|e| CommandError::from(e))?;
-
-    log::info!("Generating password of length {}", length);
 
     let mut charset = String::new();
     if uppercase { charset.push_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ"); }
@@ -208,22 +168,12 @@ pub fn generate_password(
     }
 
     let charset: Vec<char> = charset.chars().collect();
-    let mut password = String::new();
-    for _ in 0..length {
-        let idx = rand_index(charset.len());
-        password.push(charset[idx]);
-    }
+    let mut rng = rand::thread_rng();
+    let password: String = (0..length)
+        .map(|_| charset[rng.gen_range(0..charset.len())])
+        .collect();
 
     Ok(password)
-}
-
-fn rand_index(max: usize) -> usize {
-    use rand::Rng;
-    if max == 0 {
-        return 0;
-    }
-    let mut rng = rand::thread_rng();
-    rng.gen_range(0..max)
 }
 
 /// Start P2P discovery
