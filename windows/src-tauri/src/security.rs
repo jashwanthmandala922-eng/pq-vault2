@@ -5,8 +5,6 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Mutex;
-use tauri::command::{CommandPayload, CommandScope};
 
 /// Error types for command validation
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -88,15 +86,15 @@ impl CommandValidator {
                 },
                 ValidationRule {
                     field_name: "url".to_string(),
-                    constraints: FieldConstraint::String(Some(LengthConstraints { max: 2048 })),
+                    constraints: FieldConstraint::String(Some(LengthConstraints { min: 0, max: 2048 })),
                 },
                 ValidationRule {
                     field_name: "username".to_string(),
-                    constraints: FieldConstraint::String(Some(LengthConstraints { max: 256 })),
+                    constraints: FieldConstraint::String(Some(LengthConstraints { min: 0, max: 256 })),
                 },
                 ValidationRule {
                     field_name: "password".to_string(),
-                    constraints: FieldConstraint::String(Some(LengthConstraints { max: 4096 })),
+                    constraints: FieldConstraint::String(Some(LengthConstraints { min: 0, max: 4096 })),
                 },
             ],
         );
