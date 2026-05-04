@@ -11,8 +11,6 @@ function App() {
       setIsLoggedIn(true);
     } catch (e) {
       console.error('Login failed:', e);
-      // For demo, just allow login
-      setIsLoggedIn(true);
     }
   };
 
