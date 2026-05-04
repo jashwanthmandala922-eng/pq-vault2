@@ -22,6 +22,7 @@ pub enum ValidationError {
 pub type CommandResult<T> = Result<T, ValidationError>;
 
 /// Schema for command input validation
+#[allow(dead_code)]
 pub trait CommandSchema {
     fn validate(&self) -> CommandResult<()>;
 }
@@ -38,6 +39,7 @@ pub struct ValidationRule {
     pub constraints: FieldConstraint,
 }
 
+#[allow(dead_code)]
 pub enum FieldConstraint {
     String(Option<LengthConstraints>),
     Numeric { min: Option<i64>, max: Option<i64> },
@@ -251,7 +253,6 @@ pub fn validate_password_strength(password: &str) -> Result<(), ValidationError>
     Ok(())
 }
 
-/// Global validator instance
 lazy_static::lazy_static! {
     pub static ref VALIDATOR: CommandValidator = CommandValidator::new();
 }
