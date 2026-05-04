@@ -23,21 +23,22 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
+      - name: Download and setup Gradle
+        run: |
+          cd /tmp
+          curl -sL https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle.zip
+          unzip -q gradle.zip
+          echo "/tmp/gradle-8.7/bin" >> $GITHUB_PATH
 
       - name: Build Debug APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          /tmp/gradle-8.7/bin/gradle assembleDebug --no-daemon
 
       - name: Build Release APK
         run: |
           cd android
-          ./gradlew assembleRelease --no-daemon
+          /tmp/gradle-8.7/bin/gradle assembleRelease --no-daemon
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
