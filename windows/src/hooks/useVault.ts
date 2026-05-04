@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { secureVault, VaultEntry, SecureAPIError } from '../lib/secureVault';
 
-export interface VaultEntry {
-  id: string;
-  title: string;
-  url: string | null;
-  username: string | null;
-  created_at: string;
-  favorite: boolean;
-}
+export type { VaultEntry };
 
 export function useVault() {
   const [entries, setEntries] = useState<VaultEntry[]>([]);
@@ -44,7 +37,10 @@ export function useVault() {
   async function addEntry(title: string, url: string | null, username: string | null, password: string) {
     setIsLoading(true);
     try {
-      await secureVault.addEntry(title, password, { url, username });
+      await secureVault.addEntry(title, password, { 
+        url: url ?? undefined, 
+        username: username ?? undefined 
+      });
       const result = await secureVault.getEntries();
       setEntries(result);
     } catch (e) {

@@ -26,6 +26,7 @@ interface PasswordOptions {
   lowercase: boolean;
   numbers: boolean;
   symbols: boolean;
+  [key: string]: number | boolean;
 }
 
 class SecureAPIError extends Error {

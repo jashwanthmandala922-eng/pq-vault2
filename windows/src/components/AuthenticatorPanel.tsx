@@ -11,7 +11,7 @@ export function AuthenticatorPanel() {
   const [codes, setCodes] = useState<Map<string, string>>(new Map());
   const [timeLeft, setTimeLeft] = useState(30);
 
-  const [entries, setEntries] = useState<TOTPEntry[]>([
+  const [entries] = useState<TOTPEntry[]>([
     { id: '1', service: 'Google', account: 'user@gmail.com', secret: 'JBSWY3DPEHPK3PXP' },
     { id: '2', service: 'GitHub', account: 'user@email.com', secret: 'GEZDGNBVGY3TQOJQ' },
   ]);
