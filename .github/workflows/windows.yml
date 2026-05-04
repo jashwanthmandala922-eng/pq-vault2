@@ -18,7 +18,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-          targets: x86_64-pc-windows-msvc
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -51,17 +50,6 @@ jobs:
         with:
           name: pqvault-windows-msi
           path: windows/src-tauri/target/release/bundle/msi/*.msi
-
-      - name: Check EXE size
-        run: |
-          $exe = Get-ChildItem -Path "windows/src-tauri/target/release" -Filter "*.exe" | Select-Object -First 1
-          if ($exe) {
-            $size = [math]::Round($exe.Length / 1MB, 2)
-            Write-Host "EXE size: ${size}MB"
-            if ($size -lt 50) {
-              Write-Host "Warning: EXE size is less than 50MB"
-            }
-          }
 
   build-web:
     runs-on: ubuntu-latest

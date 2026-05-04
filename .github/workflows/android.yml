@@ -20,23 +20,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle
-        run: |
-          cd /tmp
-          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
-          unzip -q gradle-8.4-bin.zip -d /opt
-          echo "/opt/gradle-8.4/bin" >> $GITHUB_PATH
-        shell: bash
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
 
-      - name: Build Android Debug APK
+      - name: Build with Gradle Wrapper
         run: |
+          chmod +x android/gradlew
           cd android
-          /opt/gradle-8.4/bin/gradle assembleDebug --no-daemon
-
-      - name: Build Android Release APK
-        run: |
-          cd android
-          /opt/gradle-8.4/bin/gradle assembleRelease --no-daemon
+          ./gradlew assembleDebug assembleRelease --no-daemon
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -50,20 +41,6 @@ jobs:
           name: pqvault-android-release
           path: android/app/build/outputs/apk/release/*.apk
 
-      - name: Check APK size
-        run: |
-          APK_PATH="android/app/build/outputs/apk/release/app-release.apk"
-          if [ -f "$APK_PATH" ]; then
-            SIZE=$(du -h "$APK_PATH" | cut -f1)
-            echo "Release APK size: $SIZE"
-            SIZE_BYTES=$(stat -c%s "$APK_PATH")
-            SIZE_MB=$((SIZE_BYTES / 1024 / 1024))
-            echo "Release APK size: ${SIZE_MB}MB"
-            if [ $SIZE_MB -lt 50 ]; then
-              echo "Warning: APK size is less than 50MB"
-            fi
-          fi
-
   test:
     runs-on: ubuntu-latest
     steps:
@@ -76,15 +53,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gradle
-        run: |
-          cd /tmp
-          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
-          unzip -q gradle-8.4-bin.zip -d /opt
-          echo "/opt/gradle-8.4/bin" >> $GITHUB_PATH
-        shell: bash
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Run tests
         run: |
+          chmod +x android/gradlew
           cd android
-          /opt/gradle-8.4/bin/gradle test --no-daemon
+          ./gradlew test --no-daemon
