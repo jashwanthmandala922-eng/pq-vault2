@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import { secureVault } from '../lib/secureVault';
+import { secureVault, PasswordOptions } from '../lib/secureVault';
 
-export interface PasswordOptions {
-  length: number;
-  uppercase: boolean;
-  lowercase: boolean;
-  numbers: boolean;
-  symbols: boolean;
-}
+export type { PasswordOptions };
 
 export interface PasswordGeneratorProps {
   onGenerate: (password: string) => void;
