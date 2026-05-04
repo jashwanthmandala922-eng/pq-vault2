@@ -3,14 +3,9 @@ name: Windows Build
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'windows/**'
-      - 'securevault-core/**'
   pull_request:
     branches: [main, master]
-    paths:
-      - 'windows/**'
-      - 'securevault-core/**'
+  workflow_dispatch:
 
 jobs:
   build-windows:
