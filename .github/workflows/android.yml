@@ -1,4 +1,5 @@
 name: Android Build
+run-name: Building PQ Vault Android
 
 on:
   push:
