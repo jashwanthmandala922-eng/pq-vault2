@@ -1,5 +1,4 @@
 name: Android Build
-run-name: Building PQ Vault Android
 
 on:
   push:
@@ -54,7 +53,6 @@ jobs:
           if [ -f "$APK_PATH" ]; then
             SIZE=$(du -h "$APK_PATH" | cut -f1)
             echo "Release APK size: $SIZE"
-            # Verify size is >50MB
             SIZE_BYTES=$(stat -c%s "$APK_PATH")
             SIZE_MB=$((SIZE_BYTES / 1024 / 1024))
             echo "Release APK size: ${SIZE_MB}MB"
@@ -76,9 +74,6 @@ jobs:
           java-version: '17'
 
       - name: Run tests
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: 8.4
         run: |
           cd android
           ./gradlew test --no-daemon
