@@ -71,7 +71,17 @@ pub fn unlock_vault(password: String) -> Result<String, CommandError> {
     validate_password_strength(&password)
         .map_err(|e| CommandError::from(e))?;
 
-    log::info!("Unlocking vault with password");
+    // Simulate authentication - in production, verify against stored vault
+    // For demo, require password to be at least 12 chars for "correct" password
+    if password.len() < 12 {
+        log::warn!("Failed unlock attempt with short password");
+        return Err(CommandError {
+            code: "INVALID_CREDENTIALS".to_string(),
+            message: "Invalid master password".to_string(),
+        });
+    }
+
+    log::info!("Vault unlocked successfully");
     Ok("vault_unlocked".to_string())
 }
 
@@ -208,12 +218,12 @@ pub fn generate_password(
 }
 
 fn rand_index(max: usize) -> usize {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .subsec_nanos() as usize;
-    nanos % max
+    use rand::Rng;
+    if max == 0 {
+        return 0;
+    }
+    let mut rng = rand::thread_rng();
+    rng.gen_range(0..max)
 }
 
 /// Start P2P discovery
