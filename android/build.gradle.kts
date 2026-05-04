@@ -6,6 +6,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20" apply false
 }
 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }

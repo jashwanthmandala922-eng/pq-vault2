@@ -127,9 +127,6 @@ dependencies {
     // Biometric
     implementation("androidx.biometric:biometric:1.1.0")
 
-    // Argon2id for high-memory key derivation
-    implementation("com.kroller:argon2:0.1.1")
-
     // OAuth - Google Sign-In
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 

@@ -17,10 +17,6 @@ import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.crypto.KeyGenerator
-import com.kroller.argon2.Argon2
-import com.kroller.argon2.Argon2Algorithm
-import com.kroller.argon2.Argon2Type
-import com.kroller.argon2.Argon2Version
 
 @Singleton
 class VaultRepository @Inject constructor(
@@ -100,17 +96,10 @@ class VaultRepository @Inject constructor(
 
         val pinBytes = pin.toByteArray(Charsets.UTF_8)
 
-        val argon2 = Argon2.Builder()
-            .setIterations(4)
-            .setMemory(262144) // 256 MB
-            .setParallelism(4)
-            .setAlgorithm(Argon2Algorithm.ARGON2ID)
-            .setType(Argon2Type.ARGON2)
-            .setVersion(Argon2Version.V13)
-            .build()
-
-        val hash = argon2.hash(pinBytes, salt)
-        return hash.getHashBytes()
+        // Use PBKDF2 with high iterations as substitute for Argon2
+        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val spec = javax.crypto.spec.PBEKeySpec(pinBytes, salt, 100000, 256)
+        return factory.generateSecret(spec).encoded
     }
 
     private fun encryptLocalKeyWithHardware(key: ByteArray, salt: ByteArray): ByteArray {
