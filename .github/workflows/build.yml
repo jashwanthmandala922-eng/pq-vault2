@@ -76,7 +76,7 @@ jobs:
       - name: Install npm dependencies
         run: |
           cd windows
-          npm ci
+          npm install
 
       - name: Build Windows EXE
         run: |
