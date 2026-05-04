@@ -1,0 +1,77 @@
+# Build outputs
+android/app/build/
+android/.gradle/
+android/build/
+android/app/src/main/jniLibs/
+android/app/src/main/cpp/CMakeLists.txt
+android/app/src/main/cpp/CMakeLists.txt.user
+android/app/CMakeLists.txt
+android/CMakeLists.txt
+target/
+debug/
+release/
+*.apk
+*.aab
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.cproject
+.project
+.settings/
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Credentials & Secrets
+google-services.json
+*credentials*.json
+*secrets*.json
+*.env
+*.env.local
+.env.*
+serviceAccountKey.json
+firebase-adminsdk.json
+*.p12
+*.pfx
+*.key
+*.pem
+*.crt
+
+# Android
+android/local.properties
+android/*.jks
+android/app/keystore.jks
+android/app/signing.properties
+android/app/release.properties
+
+# Private Keys & Keystores (NEVER commit)
+*.keystore
+pqvault.keystore
+*.p12
+
+# Native build
+securevault-core/target/
+securevault-core/Cargo.lock
+
+# Logs
+*.log
+logs/
+
+# Temporary
+*.tmp
+*.bak
+*.orig
+
+# Large binaries
+*.so
+*.dll
+*.dylib
+*.aar

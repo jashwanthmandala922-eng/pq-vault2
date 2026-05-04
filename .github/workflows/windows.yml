@@ -1,0 +1,104 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'windows/**'
+      - 'securevault-core/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'windows/**'
+      - 'securevault-core/**'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: windows/package-lock.json
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: windows/src-tauri
+
+      - name: Install npm dependencies
+        run: |
+          cd windows
+          npm ci
+
+      - name: Build Windows (Debug)
+        run: |
+          cd windows
+          npm run tauri build -- --debug
+
+      - name: Build Windows (Release)
+        run: |
+          cd windows
+          npm run tauri build
+
+      - name: Upload Windows Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: pqvault-windows-installer
+          path: windows/src-tauri/target/release/bundle/nsis/*.exe
+
+      - name: Upload Windows MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: pqvault-windows-msi
+          path: windows/src-tauri/target/release/bundle/msi/*.msi
+
+      - name: Check EXE size
+        run: |
+          $exe = Get-ChildItem -Path "windows/src-tauri/target/release" -Filter "*.exe" | Select-Object -First 1
+          if ($exe) {
+            $size = [math]::Round($exe.Length / 1MB, 2)
+            Write-Host "EXE size: ${size}MB"
+            if ($size -lt 50) {
+              Write-Host "Warning: EXE size is less than 50MB"
+            }
+          }
+
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: windows/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd windows
+          npm ci
+
+      - name: Build web frontend
+        run: |
+          cd windows
+          npm run build
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: pqvault-web
+          path: windows/dist

@@ -1,0 +1,56 @@
+[package]
+name = "securevault-core"
+version = "1.0.0"
+edition = "2021"
+authors = ["SecureVault Team"]
+description = "Post-Quantum Password Manager Core Library"
+license = "MIT"
+repository = "https://github.com/securevault/core"
+
+[dependencies]
+# Cryptography - using ring for production-ready crypto
+ring = "0.17"
+sha2 = "0.10"
+hmac = "0.12"
+aes-gcm = "0.10"
+chacha20poly1305 = "0.10"
+argon2 = "0.5"
+
+# Post-Quantum - liboqs via system bindings
+liboqs = "0.9"
+
+# Utilities
+uuid = { version = "1.8", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.22"
+thiserror = "1.0"
+log = "0.4"
+zeroize = { version = "1.7", features = ["derive"] }
+getrandom = "0.2"
+
+# Async for P2P
+tokio = { version = "1.36", features = ["full"] }
+
+# URL parsing for autofiller
+url = "2.5"
+
+# Windows TPM support
+[target.'cfg(windows)'.dependencies]
+tss-esapi = "7.4"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+env_logger = "0.11"
+
+[dev-dependencies]
+tempfile = "3.10"
+criterion = "0.5"
+
+[[bench]]
+name = "crypto"
+harness = false
+
+[lib]
+name = "securevault_core"
+crate-type = ["cdylib", "rlib"]

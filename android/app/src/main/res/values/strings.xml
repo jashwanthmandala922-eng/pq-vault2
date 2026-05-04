@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PQ Vault</string>
+    <string name="app_description">Post-Quantum Password Manager</string>
+    
+    <!-- Login -->
+    <string name="login_title">Unlock Vault</string>
+    <string name="login_password_hint">Master Password</string>
+    <string name="login_button">Unlock</string>
+    <string name="login_oauth_google">Continue with Google</string>
+    <string name="login_oauth_apple">Continue with Apple</string>
+    <string name="login_biometric">Use Biometric</string>
+    
+    <!-- Vault -->
+    <string name="vault_title">Passwords</string>
+    <string name="vault_empty">No passwords yet</string>
+    <string name="vault_search_hint">Search passwords...</string>
+    <string name="vault_add">Add Password</string>
+    
+    <!-- Entry -->
+    <string name="entry_title_hint">Title</string>
+    <string name="entry_url_hint">Website URL</string>
+    <string name="entry_username_hint">Username / Email</string>
+    <string name="entry_password_hint">Password</string>
+    <string name="entry_notes_hint">Notes</string>
+    <string name="entry_save">Save</string>
+    <string name="entry_delete">Delete</string>
+    <string name="entry_copy">Copy Password</string>
+    
+    <!-- Authenticator -->
+    <string name="authenticator_title">Authenticator</string>
+    <string name="authenticator_add">Add 2FA</string>
+    <string name="authenticator_scan">Scan QR Code</string>
+    <string name="authenticator_enter_manually">Enter Manually</string>
+    
+    <!-- Generator -->
+    <string name="generator_title">Password Generator</string>
+    <string name="generator_length">Password Length</string>
+    <string name="generator_uppercase">Uppercase (A-Z)</string>
+    <string name="generator_lowercase">Lowercase (a-z)</string>
+    <string name="generator_numbers">Numbers (0-9)</string>
+    <string name="generator_symbols">Symbols (!@#$%)</string>
+    <string name="generator_generate">Generate</string>
+    <string name="generator_copy">Copy</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_biometric">Biometric Unlock</string>
+    <string name="settings_auto_lock">Auto-lock</string>
+    <string name="settings_clipboard">Clear Clipboard</string>
+    <string name="settings_features">Features</string>
+    <string name="settings_passkeys">Passkeys</string>
+    <string name="settings_sync">P2P Sync</string>
+    <string name="settings_import">Import / Export</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_lock">Lock Vault</string>
+    
+    <!-- Sync -->
+    <string name="sync_title">P2P Sync</string>
+    <string name="sync_discover">Discover Devices</string>
+    <string name="sync_start">Start Sync</string>
+    <string name="sync_status">Status</string>
+    <string name="sync_connected">Connected</string>
+    <string name="sync_disconnected">Not connected</string>
+    <string name="sync_discovering">Discovering...</string>
+    
+    <!-- Passkeys -->
+    <string name="passkeys_title">Passkeys</string>
+    <string name="passkeys_add">Add Passkey</string>
+    <string name="passkeys_empty">No passkeys yet</string>
+    
+    <!-- Errors -->
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_vault_locked">Vault is locked</string>
+    <string name="error_network">Network error</string>
+    <string name="error_unknown">An error occurred</string>
+    
+    <!-- Success -->
+    <string name="success_password_copied">Password copied</string>
+    <string name="success_entry_saved">Password saved</string>
+    <string name="success_entry_deleted">Password deleted</string>
+    <string name="success_vault_unlocked">Vault unlocked</string>
+</resources>
