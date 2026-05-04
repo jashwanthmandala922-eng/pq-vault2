@@ -132,12 +132,18 @@ dependencies {
 
     // Camera for QR scanning
     implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+    // ZXing for QR code generation
+    implementation("com.google.zxing:core:3.5.2")
     implementation("androidx.camera:camera-camera2:1.3.0")
     implementation("androidx.camera:camera-lifecycle:1.3.0")
     implementation("androidx.camera:camera-view:1.3.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Lifecycle Process for ProcessLifecycleOwner
+    implementation("androidx.lifecycle:lifecycle-process:2.6.2")
 
     // Coil for images
     implementation("io.coil-kt:coil-compose:2.5.0")

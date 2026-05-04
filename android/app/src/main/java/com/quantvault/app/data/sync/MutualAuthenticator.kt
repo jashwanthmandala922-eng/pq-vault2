@@ -1,6 +1,8 @@
 package com.quantvault.app.data.sync
 
 import android.util.Base64
+import java.math.BigInteger
+import java.security.KeyFactory
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.KeyAgreement
@@ -8,7 +10,6 @@ import javax.crypto.KeyGenerator
 import javax.crypto.interfaces.DHPrivateKey
 import javax.crypto.interfaces.DHPublicKey
 import javax.crypto.spec.DHParameterSpec
-import javax.crypto.KeyFactory
 import javax.crypto.spec.X509EncodedKeySpec
 
 data class MutualAuthState(

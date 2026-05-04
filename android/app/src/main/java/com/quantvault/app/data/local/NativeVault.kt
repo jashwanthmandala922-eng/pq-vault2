@@ -27,7 +27,7 @@ class NativeVault private constructor() {
         Result.success(nativeUnlockVault(password, encryptedData))
     } catch (e: Exception) { Result.failure(e) }
 
-    fun addEntry(vaultData: ByteArray, entry: VaultEntry): Result<ByteArray> = try {
+    fun addEntry(vaultData: ByteArray, entry: VaultEntryDto): Result<ByteArray> = try {
         val entryJson = """{"id":"${entry.id}","title":"${entry.title}","url":"${entry.url}","username":"${entry.username}","password":"${entry.password}","notes":"${entry.notes}","createdAt":"${entry.createdAt}","favorite":${entry.favorite}}"""
         Result.success(nativeAddEntry(vaultData, entryJson.toByteArray()))
     } catch (e: Exception) { Result.failure(e) }
@@ -36,17 +36,17 @@ class NativeVault private constructor() {
         Result.success(nativeDeleteEntry(vaultData, entryId))
     } catch (e: Exception) { Result.failure(e) }
 
-    fun getEntries(vaultData: ByteArray): Result<List<VaultEntry>> = try {
+    fun getEntries(vaultData: ByteArray): Result<List<VaultEntryDto>> = try {
         val result = nativeGetEntries(vaultData)
         val json = String(result, Charsets.UTF_8)
         if (json.isBlank() || json == "[]") Result.success(emptyList())
         else {
-            val list = mutableListOf<VaultEntry>()
+            val list = mutableListOf<VaultEntryDto>()
             try {
                 val arr = org.json.JSONArray(json)
                 for (i in 0 until arr.length()) {
                     val obj = arr.getJSONObject(i)
-                    list.add(VaultEntry(
+                    list.add(VaultEntryDto(
                         id = obj.optString("id", java.util.UUID.randomUUID().toString()),
                         title = obj.optString("title", ""),
                         url = obj.optString("url").ifEmpty { null },
@@ -63,7 +63,7 @@ class NativeVault private constructor() {
     } catch (e: Exception) { Result.failure(e) }
 }
 
-data class VaultEntry(
+data class VaultEntryDto(
     val id: String = java.util.UUID.randomUUID().toString(),
     val title: String,
     val url: String? = null,
